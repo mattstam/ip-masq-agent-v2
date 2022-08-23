@@ -19,7 +19,7 @@ BINS := ip-masq-agent-v2
 ALL_PLATFORMS := linux/amd64 linux/arm linux/arm64 linux/ppc64le linux/s390x windows/amd64
 
 # Where to push the docker images.
-REGISTRY ?= gcr.io/k8s-staging-networking
+REGISTRY ?= mattstamcr/ip-masq-agent-v2:v0.0.0
 
 # This version-strategy uses git tags to set the version string
 VERSION ?= $(shell git describe --tags --always --dirty)
@@ -69,7 +69,7 @@ endif
 
 TAG := $(VERSION)__$(OS)_$(ARCH)
 
-BUILD_IMAGE ?= golang:1.17-alpine
+BUILD_IMAGE ?= golang:1.18-alpine
 
 BIN_EXTENSION :=
 ifeq ($(OS), windows)
@@ -217,7 +217,7 @@ CONTAINER_DOTFILES = $(foreach bin,$(BINS),.container-$(subst /,_,$(REGISTRY)/$(
 container containers: # @HELP builds containers for one platform ($OS/$ARCH)
 container containers: $(CONTAINER_DOTFILES)
 	@for bin in $(BINS); do              \
-	    echo "container: $(REGISTRY)/$$bin:$(TAG)"; \
+		echo "container: $(REGISTRY)/$$bin:$(TAG)"; \
 	done
 	@echo
 
