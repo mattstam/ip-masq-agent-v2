@@ -61,6 +61,7 @@ type MasqConfig struct {
 	NonMasqueradeCIDRs []string `json:"nonMasqueradeCIDRs"`
 	MasqLinkLocal      bool     `json:"masqLinkLocal"`
 	MasqLinkLocalIPv6  bool     `json:"masqLinkLocalIPv6"`
+	LogVerbosityLevel  string   `json:"logVerbosityLevel"`
 }
 
 // Duration - Go's JSON unmarshaler can't handle time.ParseDuration syntax when unmarshaling into time.Duration, so we do it here
@@ -104,7 +105,7 @@ func DefaultMasqConfig() *MasqConfig {
 			"198.18.0.0/15",   // RFC 6815
 			"198.51.100.0/24", // RFC 5737
 			"203.0.113.0/24",  // RFC 5737
-			"240.0.0.0/4")     // RFC 5735, Former Class E range obsoleted by RFC 3232
+			"240.0.0.0/4") // RFC 5735, Former Class E range obsoleted by RFC 3232
 	}
 
 	return &MasqConfig{
@@ -175,6 +176,11 @@ func (m *MasqDaemon) Run() error {
 		err = m.syncMasqRulesIPv6()
 		if err != nil {
 			return fmt.Errorf("error syncing masquerade rules for ipv6: %w", err)
+		}
+		// resync logging verbosity
+		err = m.syncLogVerbosity()
+		if err != nil {
+			return fmt.Errorf("error syncing log verbosity level: %w", err)
 		}
 
 		time.Sleep(time.Duration(*resyncInterval) * time.Second)
@@ -394,6 +400,18 @@ func (m *MasqDaemon) syncMasqRulesIPv6() error {
 		err = m.ip6tables.RestoreAll(lines6.Bytes(), utiliptables.NoFlushTables, utiliptables.NoRestoreCounters)
 		if err != nil {
 			return err
+		}
+	}
+	return nil
+}
+
+func (m *MasqDaemon) syncLogVerbosity() error {
+	level := m.config.LogVerbosityLevel
+
+	if level != "" {
+		_, err := logs.GlogSetter(level)
+		if err != nil {
+			return fmt.Errorf("failed to set log verbosity level %q: %w", level, err)
 		}
 	}
 	return nil
