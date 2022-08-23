@@ -217,7 +217,7 @@ CONTAINER_DOTFILES = $(foreach bin,$(BINS),.container-$(subst /,_,$(REGISTRY)/$(
 container containers: # @HELP builds containers for one platform ($OS/$ARCH)
 container containers: $(CONTAINER_DOTFILES)
 	@for bin in $(BINS); do              \
-		echo "container: $(REGISTRY)/$$bin:$(TAG)"; \
+	    echo "container: $(REGISTRY)/$$bin:$(TAG)"; \
 	done
 	@echo
 
