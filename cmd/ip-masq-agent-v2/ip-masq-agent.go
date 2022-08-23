@@ -105,7 +105,7 @@ func DefaultMasqConfig() *MasqConfig {
 			"198.18.0.0/15",   // RFC 6815
 			"198.51.100.0/24", // RFC 5737
 			"203.0.113.0/24",  // RFC 5737
-			"240.0.0.0/4") // RFC 5735, Former Class E range obsoleted by RFC 3232
+			"240.0.0.0/4")     // RFC 5735, Former Class E range obsoleted by RFC 3232
 	}
 
 	return &MasqConfig{
